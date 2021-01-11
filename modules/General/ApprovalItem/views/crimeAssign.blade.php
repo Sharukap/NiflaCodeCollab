@@ -18,32 +18,19 @@
                     <th>Location</th>
                     <th>Date complained logged</th>
                     <th>Action taken</th>
+                    <th>Photos</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>{{$crime->id}}</td>
-                    @switch($crime->crime_type)
-                    @case('1')
-                    <td>Illegal tree cutting</td>
-                    @break;
-                    @case('2')
-                    <td>Illegal mining</td>
-                    @endswitch
+                    <td>{{$crime->crime_type->type}}</td>
                     <td>{{$crime->description}}</td>
                     <td>...</td>
                     <td>{{date('d-m-Y',strtotime($crime->created_at))}}</td>
-                    @switch($crime->action_taken)
-                    @case('0')
-                    <td>To be taken</td>
-                    @break;
-                    @case('1')
-                    <td>Investigated and Rejected</td>
-                    @break;
-                    @case('2')
-                    <td>Investigated and action taken</td>
-                    @endswitch
+                    <td>{{$crime->taken_action->type}}</td>
+                    <td><img src="{{ asset('\storage\crimeEvidence\WhatsApp Image 2021-01-02 at 16.49.22.jpeg') }}" alt="photo" width="80" /> </td>
                     <td>{{$crime->status}}</td>
                 </tr>
             </tbody>
@@ -60,13 +47,15 @@
                     <th>Requested by</th>
                     <th>status</th>
                     <th>remarks</th>
+                    <th>check</th>
                 </tr>
             </thead>
             <tbody>
             @foreach($Prerequisites as $prerequisite)<tr>
-                    <td>{{$prerequisite->remark}}</td>
                     <td>{{$prerequisite->requst_organization}}</td>
-                    <td>{{$prerequisite->email}}</td>
+                    <td>{{$prerequisite->status_id}}</td>
+                    <td>{{$prerequisite->remark}}</td>
+                    <td><a href="/approval-item/viewprerequisite/{{$prerequisite->id}}" class="text-muted">check</a></td>
                 </tr>
             @endforeach
             </tbody>
@@ -105,6 +94,49 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+</div>
+<br>
+<hr>
+<br>
+<div class="row justify-content-between">
+    <div class="col-md-8">
+        <h6>Request additional investigation</h6>
+        <br>
+        <form action="\approval-item\createprerequisite" method="post">
+            @csrf
+            <h6>Select Organization in charge</h6>
+            <div class="input-group mb-3">
+            <select name="organization" class="custom-select">
+                <option value="0" selected>Select Organization</option>
+            @foreach($Organizations as $organization)         
+                <option value="{{$organization->id}}">{{$organization->title}}</option>
+            @endforeach
+            </select>
+            @error('organization')
+                <div class="alert">                                   
+                    <strong>{{ $message }}</strong>
+                </div>
+            @enderror
+            </div>
+            <h6>Request</h6>
+            <div class="input-group mb-3">
+            </br>
+                <textarea  class="form-control" rows="5" name="request">
+                </textarea>
+                @error('request')
+                    <div class="alert">
+                        <strong>{{ $message }}</strong>
+                    </div>
+                @enderror
+                <input type="hidden" class="form-control" name="create_by" value="{{ Auth::user()->id }}">
+                <input type="hidden" class="form-control" name="create_organization" value="{{ Auth::user()->organization_id }}">
+                <input type="hidden" class="form-control" name="process_id" value="{{ $Process_item->id }}">
+            </div>
+            <div class="form-check">
+                <button type="submit" class="btn btn-primary" >Submit</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

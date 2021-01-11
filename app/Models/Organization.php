@@ -49,4 +49,8 @@ class Organization extends Model
     public function environment_restorations(){
         return $this->hasMany('App\Models\Environment_Restoration');
     }
+
+    public function process_items(){
+        return $this->hasMany('App\Models\Process_Item','requst_organization');
+    }
 }

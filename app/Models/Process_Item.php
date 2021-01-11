@@ -25,11 +25,8 @@ class Process_Item extends Model
 
     protected $attributes = [
         'prerequisite' => 0,
-        'prerequsite_id' => 0,
         'remark' => 0,
         'status_id' => 1,
-        'activity_user_id' => 0,
-        'activity_organization' => 0,
         'requst_organization' => 0,
     ];
 
@@ -41,5 +38,30 @@ class Process_Item extends Model
     public function status()
     {
         return $this->belongsTo('App\Models\Status');
+    }
+
+    public function prerequsite_id()
+    {
+        return $this->belongsTo('App\Models\Process_Item');
+    }
+
+    public function activity_organization()
+    {
+        return $this->belongsTo('App\Models\Organization');
+    }
+
+    public function activity_user_id()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function requst_organization()
+    {
+        return $this->belongsTo('App\Models\Organization','id');
+    }
+
+    public function created_by_user_id()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

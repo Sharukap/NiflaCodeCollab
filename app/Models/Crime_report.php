@@ -16,7 +16,7 @@ class Crime_report extends Model
      */
     protected $fillable = [
         'created_by_user_id',
-        'crime_type',
+        'crime_type_id',
         'description',
         'action_taken',
         'status',
@@ -37,10 +37,15 @@ class Crime_report extends Model
     
 
     
-
+    
     public function Crime_type()
     {
         return $this->belongsTo('App\Models\Crime_type');
+    }
+
+    public function Taken_action()
+    {
+        return $this->belongsTo('App\Models\Taken_action');
     }
 
     public function Status()

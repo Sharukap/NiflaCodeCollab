@@ -6,6 +6,7 @@ use App\Models\Crime_report;
 use App\Models\tree_removal_request;
 use App\Models\Development_Project;
 use App\Models\Process_Item;
+use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Redirect;
@@ -39,7 +40,8 @@ class ApprovalItemController extends Controller
     {
         $organization=Auth::user()->organization_id;
         $Process_item =Process_item::find($id);
-        $Prerequisites=Process_item::all()->where('id',$Process_item->prerequsite_id);
+        $Prerequisites=Process_item::all()->where('prerequsite_id',$Process_item->id);
+        $Organizations=Organization::all();
         
        
         if(Auth::user()->role_id=='3'){
@@ -63,7 +65,7 @@ class ApprovalItemController extends Controller
                 'Prerequisites' => $Prerequisites,
                 'Process_item' =>$Process_item,
             ]);
-        }
+        } 
         else if($Process_item->form_type_id == '2'){
             $devp = Development_Project::find($Process_item->form_id);
             return view('approvalItem::developAssign',[
@@ -80,6 +82,7 @@ class ApprovalItemController extends Controller
                 'Prerequisites' => $Prerequisites,
                 'Users' => $Users,
                 'Process_item' =>$Process_item,
+                'Organizations' => $Organizations,
             ]);
         } 
     }
@@ -109,5 +112,38 @@ class ApprovalItemController extends Controller
                 'progress' => $progress,
             ]);
         } 
+    }
+
+    public function test()
+    {
+        $crime = Crime_report::find(9);
+            return view('approvalItem::index',[
+                'crime' => $crime,
+            ]);
+    }
+
+    public function create_prerequisite(Request $request)
+    {
+        
+        $request -> validate([
+            'organization' => 'required|not_in:0',
+            'request' => 'required',
+        ]);
+        $id=$request['process_id'];
+        $Process_item_old =Process_item::find($id);
+        $Process_item_old->update([
+            'prerequisite' => "1",
+        ]);
+        $Process_item =new Process_item;
+        $Process_item->Created_by_user_id = $request['create_by'];
+        $Process_item->requst_organization = $request['create_organization'];
+        $Process_item->activity_organization = $request['organization'];
+        $Process_item->form_id = $Process_item_old['form_id'];
+        $Process_item->form_type_id = $Process_item_old['form_type_id'];  
+        $Process_item->status_id = "1";
+        $Process_item->prerequsite_id  = $Process_item_old['id'];
+        $Process_item->remark = $request['request'];
+        $Process_item->save();
+        return back()->with('message', 'Prerequisite logged Successfully');  
     }
 }

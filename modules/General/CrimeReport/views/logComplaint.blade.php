@@ -19,15 +19,15 @@
     </div>
     <hr>
      <div class='row justify-content-center'> 
-     <form action="\crime-report\crimecreate" method="post">
+     <form action="\crime-report\crimecreate" method="post" enctype="multipart/form-data">
       @csrf
                        <h6>Crime type</h6>
                        <div class="input-group mb-3">
                             <select name="crime_type" class="custom-select" required>
-                                <option value="0" selected>Select</option>
-                                <option value="1">Illegal tree cutting</option>
-                                <option value="2">Illegal tree transportation</option>
-                                <option value="3">Environment polution</option>
+                                <option value="0" selected>Select Crime Type</option>
+                                @foreach($CrimeTypes as $crimetype)         
+                                <option value="{{$crimetype->id}}">{{$crimetype->type}}</option>
+                                @endforeach
                             </select>
                             @error('crime_type')
                                 <div class="alert">                                   
@@ -41,8 +41,7 @@
                         <div class="input-group mb-3">
                             <select name="organization" class="custom-select" required>
                                 <option value="0" selected>Select Organization</option>
-                            @foreach($Organizations as $organization)
-                                
+                            @foreach($Organizations as $organization)         
                                 <option value="{{$organization->id}}">{{$organization->title}}</option>
                                 @endforeach
                             </select>
@@ -57,11 +56,7 @@
                         </div>
                         <div class="form-group">
                             <h6>Photos</h6>
-                            <input type="file" id="images" name="images[]">
-                        </div>
-                        <div class="form-group">
-                            <h6>Photos</h6>
-                            <input type="file" id="images" name="images[]">
+                            <input type="file" id="images" name="images">
                         </div>
                        </br>
                        <h6>Description</h6>

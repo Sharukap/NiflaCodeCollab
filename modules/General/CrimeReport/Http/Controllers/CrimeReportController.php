@@ -10,7 +10,8 @@ use App\Models\Crime_report;
 use App\Models\User;
 use App\Models\Process_item;
 use App\Models\Organization;
-use App\Models\tree_removal_request;
+use App\Models\Crime_type;
+
 
 class CrimeReportController extends Controller
 {
@@ -19,7 +20,10 @@ class CrimeReportController extends Controller
 
     public function crime_report_form_display() {
         $Organizations = Organization::all();
-        return view('crimeReport::logComplaint',['Organizations' => $Organizations],);
+        $CrimeTypes = Crime_type::all();
+        //dd($CrimeTypes);
+        return view('crimeReport::logComplaint',['Organizations' => $Organizations],['CrimeTypes'=>$CrimeTypes,
+        ]);
     }
 
      public function assign_authorities_crimereport(Request $request)
@@ -89,7 +93,9 @@ class CrimeReportController extends Controller
 
 
     public function create_crime_report(Request $request)
-    {       
+    {   
+        $filename =$request->images->getClientOriginalName();  
+        $path = $request->images->storeAs('crimeEvidence',$filename,'public');
         $request -> validate([
             'crime_type' => 'required|not_in:0',
             'description' => 'required',
@@ -97,12 +103,13 @@ class CrimeReportController extends Controller
             'confirm' => 'required',
             'create_by'=>'required',
         ]);
-
         $Crime_report = new Crime_report;
         $Crime_report->Created_by_user_id = $request['create_by'];
         $Crime_report->crime_type = $request['crime_type'];
         $Crime_report->description = $request['description'];
-        $Crime_report->photos = "{}";
+        if ($request->file('images')->isValid()) {
+            $Crime_report->photos = json_encode($filename);
+        };
         $Crime_report->logs = "{}";
         $Crime_report->action_taken = "0";
         $Crime_report->land_parcel_id = "1"; //add relationship later
@@ -112,16 +119,14 @@ class CrimeReportController extends Controller
         $crime_type =$request['crime_type'];
         $Process_item =new Process_item;
         $Process_item->Created_by_user_id = $request['create_by'];
-        $Process_item->requst_organization = $request['organization'];
-        $Process_item->activity_organization = "0";
-        $Process_item->activity_organization = "0";
-        $Process_item->activity_user_id = "0";
+        $Process_item->activity_organization = $request['organization'];
+
         $Process_item->form_id =  $id;
         $Process_item->form_type_id = "4";      
         $Process_item->status_id = "1";
         $Process_item->remark = "to be made yet";
         $Process_item->save();
-        return back()->with('message', 'Crime report logged Successfully'); 
+        return back()->with('message', 'Crime report logged Successfully');  
         }     
        
     public function search_specific_authorities(Request $request)

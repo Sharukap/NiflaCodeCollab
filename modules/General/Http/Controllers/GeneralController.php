@@ -57,6 +57,7 @@ class GeneralController extends Controller
         $noOrganization=2;
         $role = Auth::user()->role_id;
         $id= Auth::user()->id;
+        $user =User::find($id);
 
         if ($role == 1 || $role == 2 || $role == NULL ){
             
@@ -64,6 +65,8 @@ class GeneralController extends Controller
         } 
         if ($role == 3 || $role == 4){
             $Process_items = Process_item::all()->where('activity_organization',$organization);
+            /* $Process_item = Process_item::find(10);
+            dd($Process_item->form_type->type); */
             return view('general::generalM', [
                 'Process_items' => $Process_items,
             ]);

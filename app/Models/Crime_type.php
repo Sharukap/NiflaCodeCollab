@@ -9,7 +9,7 @@ class Crime_type extends Model
 {
     use HasFactory;
 
-    public function process_items(){
+    public function Crime_report(){
         return $this->hasMany('App\Models\Crime_report');
     }
 
